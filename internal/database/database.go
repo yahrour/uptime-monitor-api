@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"gorm.io/driver/sqlite"
@@ -7,7 +7,7 @@ import (
 
 var DB *gorm.DB
 
-func connectToDatabase() {
+func ConnectToDatabase() {
 	db, err := gorm.Open(sqlite.Open("app.db"), &gorm.Config{})
 
 	if err != nil {

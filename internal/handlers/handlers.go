@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yahrour/uptime-monitor-api/internal/database"
@@ -21,6 +22,16 @@ func GetSites(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, rows)
 }
 
+func isValidURL(s string) bool {
+	res, err := url.ParseRequestURI(s)
+
+	if err != nil {
+		return false
+	}
+
+	return (res.Scheme == "http" || res.Scheme == "https") && res.Host != ""
+}
+
 func CreateNewSite(ctx *gin.Context) {
 	var siteToMonitor models.ToMonitor
 	if err := ctx.ShouldBindJSON(&siteToMonitor); err != nil {
@@ -33,9 +44,13 @@ func CreateNewSite(ctx *gin.Context) {
 		return
 	}
 
-	// http:// https://
-	if len(siteToMonitor.Site) < 7 || len(siteToMonitor.Webhook) < 7 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid site/webhook url(s)"})
+	if !isValidURL(siteToMonitor.Site) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid site url"})
+		return
+	}
+
+	if !isValidURL(siteToMonitor.Webhook) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid webhook url"})
 		return
 	}
 

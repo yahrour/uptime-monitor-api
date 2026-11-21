@@ -20,6 +20,7 @@ func main() {
 	go monitor.FireMonitors()
 
 	// Define Routes
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	router.GET("/sites", handlers.GetSites)

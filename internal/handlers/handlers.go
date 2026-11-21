@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/yahrour/uptime-monitor-api/internal/database"
 	"github.com/yahrour/uptime-monitor-api/internal/models"
 	"github.com/yahrour/uptime-monitor-api/internal/monitor"
+	"gorm.io/gorm"
 )
 
 func GetSites(ctx *gin.Context) {
@@ -55,6 +57,11 @@ func CreateNewSite(ctx *gin.Context) {
 	}
 
 	res := database.DB.Create(&siteToMonitor)
+
+	if errors.Is(res.Error, gorm.ErrDuplicatedKey) {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "Site already exist"})
+		return
+	}
 
 	if res.Error != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Something went wrong on creation"})

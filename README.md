@@ -62,12 +62,6 @@ Healthchecks.io then alerts you (email, Slack, etc.) if the pings stop or a `/fa
 | `webhook`  | string  | Healthchecks.io ping URL                      |
 | `interval` | integer | Check interval in minutes (must be 1 or more) |
 
-```bash
-curl -X POST http://localhost:8080/sites/new \
-  -H "Content-Type: application/json" \
-  -d '{"site": "https://example.com", "webhook": "https://hc-ping.com/your-uuid", "interval": 5}'
-```
-
 ## How It Works
 
 Each monitored site runs in its own goroutine. It checks the site right away, then repeats every `interval` minutes:
